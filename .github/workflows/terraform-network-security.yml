@@ -101,9 +101,6 @@ jobs:
     needs: plan
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.operation == 'apply' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment:
-      name: terraform-apply
-      url: https://console.cloud.google.com/home/dashboard?project=${{ vars.GCP_PROJECT_ID }}
 
     steps:
       - name: Check out repository
