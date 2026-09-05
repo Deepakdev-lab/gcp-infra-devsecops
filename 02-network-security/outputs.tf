@@ -45,12 +45,12 @@ output "artifact_registry_repository" {
 
 output "backend_url" {
   description = "Public Cloud Run backend URL."
-  value       = var.enable_cloud_run ? google_cloud_run_v2_service.backend[0].uri : null
+  value       = google_cloud_run_v2_service.backend.uri
 }
 
 output "ui_url" {
   description = "Public Cloud Run UI URL."
-  value       = var.enable_cloud_run ? google_cloud_run_v2_service.ui[0].uri : null
+  value       = google_cloud_run_v2_service.ui.uri
 }
 
 output "required_services" {
