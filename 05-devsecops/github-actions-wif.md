@@ -179,7 +179,7 @@ In the application repository, configure these variables:
 | `GAR_LOCATION` | `us-east4` |
 | `GAR_REPOSITORY` | `cloudrun-images` |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | The `$APP_WIF_PROVIDER` output |
-| `GCP_TERRAFORM_SERVICE_ACCOUNT` | The `app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com` output |
+| `GCP_IMAGE_PUBLISHER_SERVICE_ACCOUNT` | The `app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com` output |
 
 ## Configure apply approval
 

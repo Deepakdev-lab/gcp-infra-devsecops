@@ -68,6 +68,6 @@ resource "github_actions_variable" "app_wif_provider" {
 # Creates the application repository's dedicated publisher service account variable.
 resource "github_actions_variable" "app_service_account" {
   repository    = var.github_app_repository_name
-  variable_name = "GCP_TERRAFORM_SERVICE_ACCOUNT"
+  variable_name = "GCP_IMAGE_PUBLISHER_SERVICE_ACCOUNT"
   value         = google_service_account.app_publisher.email
 }
