@@ -126,6 +126,48 @@ In GitHub, open **Settings > Secrets and variables > Actions > Variables** and c
 
 The workflow at `.github/workflows/terraform-network-security.yml` already reads these variable names.
 
+## Configure the application repository
+
+The application repository uses the same Terraform deployment service account to push images to Artifact Registry, but its repository restriction requires a separate OIDC provider. Run these commands after the infrastructure WIF setup:
+
+```powershell
+$APP_GITHUB_REPOSITORY = "Deepakdev-lab/gcp-app-devsecops"
+$APP_PROVIDER_ID = "github-app-oidc"
+
+gcloud iam workload-identity-pools providers create-oidc $APP_PROVIDER_ID `
+  --project=$PROJECT_ID `
+  --location=global `
+  --workload-identity-pool=$POOL_ID `
+  --display-name="GitHub application OIDC" `
+  --issuer-uri="https://token.actions.githubusercontent.com" `
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.ref=assertion.ref" `
+  --attribute-condition="assertion.repository == '$APP_GITHUB_REPOSITORY'"
+
+$APP_WIF_MEMBER = "principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/attribute.repository/$APP_GITHUB_REPOSITORY"
+
+gcloud iam service-accounts add-iam-policy-binding $SERVICE_ACCOUNT_EMAIL `
+  --project=$PROJECT_ID `
+  --role="roles/iam.workloadIdentityUser" `
+  --member=$APP_WIF_MEMBER
+
+gcloud projects add-iam-policy-binding $PROJECT_ID `
+  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" `
+  --role="roles/artifactregistry.writer"
+
+$APP_WIF_PROVIDER = "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/providers/$APP_PROVIDER_ID"
+$APP_WIF_PROVIDER
+```
+
+In the application repository, configure these variables:
+
+| Name | Value |
+| --- | --- |
+| `GCP_PROJECT_ID` | `project-a95e6dc6-f7fc-4043-bf9` |
+| `GAR_LOCATION` | `us-east4` |
+| `GAR_REPOSITORY` | `cloudrun-images` |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | The `$APP_WIF_PROVIDER` output |
+| `GCP_TERRAFORM_SERVICE_ACCOUNT` | The `$SERVICE_ACCOUNT_EMAIL` output |
+
 ## Configure apply approval
 
 Create a GitHub Environment named `terraform-apply`:

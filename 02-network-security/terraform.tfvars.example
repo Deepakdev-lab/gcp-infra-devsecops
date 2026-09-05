@@ -7,3 +7,7 @@ audit_log_bucket_name = "replace-with-a-globally-unique-log-bucket"
 
 # Set to true only after reviewing the estimated lab cost and plan.
 enable_nat = false
+
+# Replace :latest with the Git SHA image tags produced by the application repository workflow.
+backend_image = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:latest"
+ui_image      = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:latest"

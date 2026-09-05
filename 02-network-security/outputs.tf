@@ -37,3 +37,18 @@ output "cloud_run_bucket_role" {
   description = "Bucket role granted to the Cloud Run service account."
   value       = var.cloud_run_bucket_role
 }
+
+output "artifact_registry_repository" {
+  description = "Artifact Registry repository URL."
+  value       = google_artifact_registry_repository.cloud_run.name
+}
+
+output "backend_url" {
+  description = "Public Cloud Run backend URL."
+  value       = google_cloud_run_v2_service.backend.uri
+}
+
+output "ui_url" {
+  description = "Public Cloud Run UI URL."
+  value       = google_cloud_run_v2_service.ui.uri
+}

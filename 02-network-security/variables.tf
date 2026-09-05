@@ -75,3 +75,63 @@ variable "cloud_run_bucket_role" {
   type        = string
   default     = "roles/storage.objectViewer"
 }
+
+variable "artifact_registry_location" {
+  description = "Region for the Docker Artifact Registry repository."
+  type        = string
+  default     = "us-east4"
+}
+
+variable "artifact_registry_repository_id" {
+  description = "Artifact Registry Docker repository ID."
+  type        = string
+  default     = "cloudrun-images"
+}
+
+variable "cloud_run_region" {
+  description = "Region for both Cloud Run services."
+  type        = string
+  default     = "us-east4"
+}
+
+variable "backend_service_name" {
+  description = "Cloud Run backend service name."
+  type        = string
+  default     = "gcp-app-backend"
+}
+
+variable "ui_service_name" {
+  description = "Cloud Run UI service name."
+  type        = string
+  default     = "gcp-app-ui"
+}
+
+variable "backend_image" {
+  description = "Container image URL for the backend Cloud Run service."
+  type        = string
+  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:latest"
+}
+
+variable "ui_image" {
+  description = "Container image URL for the UI Cloud Run service."
+  type        = string
+  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:latest"
+}
+
+variable "ui_service_account_id" {
+  description = "Account ID for the public UI runtime identity."
+  type        = string
+  default     = "cloud-run-ui"
+}
+
+variable "gcs_object_name" {
+  description = "Object name that the backend reads from the application bucket."
+  type        = string
+  default     = "sample-data.txt"
+}
+
+variable "gcs_object_content" {
+  description = "Sample content displayed by the UI through the backend."
+  type        = string
+  default     = "Hello from a protected GCS object served by Cloud Run."
+}

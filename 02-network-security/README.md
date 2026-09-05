@@ -155,6 +155,24 @@ The destroy job applies the reviewed destroy plan. It does not run an unplanned 
 
 The GitHub Actions service account needs access to the remote state bucket and permission to manage the resources in this module. Workload Identity Federation is used so the workflow does not store a service-account key.
 
+### Cloud Run application deployment
+
+The application repository is `Deepakdev-lab/gcp-app-devsecops`. It contains a Node.js UI and a Python backend. Both images are pushed to the GAR repository created by this module.
+
+Use this order for the first deployment:
+
+1. Create the GAR repository without attempting to deploy Cloud Run:
+
+  ```powershell
+  .\terraform.exe apply -target=google_artifact_registry_repository.cloud_run
+  ```
+
+2. Configure the application repository's WIF variables and run its **Build and Push Cloud Run Images** workflow.
+3. Set `backend_image` and `ui_image` in `terraform.tfvars` to the image URLs printed by that workflow.
+4. Run `terraform plan` and apply through the protected GitHub Actions `apply` operation.
+
+The backend reads `sample-data.txt` from the private application bucket using the `cloud-run-gcs-app` service account. The UI receives the backend URL from Terraform and calls `/api/data`. Both services are public for this lab; the bucket remains private.
+
 ### Learning sequence
 
 1. Apply the bucket, service account, and bucket IAM resources.
