@@ -67,6 +67,23 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -input=false
 
+      - name: Normalize Cloud Run state addresses
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        shell: bash
+        run: |
+          move_state() {
+            source_address="$1"
+            target_address="$2"
+            if terraform state list | grep -Fqx "$source_address"; then
+              terraform state mv "$source_address" "$target_address"
+            fi
+          }
+
+          move_state 'google_cloud_run_v2_service.backend[0]' 'google_cloud_run_v2_service.backend'
+          move_state 'google_cloud_run_v2_service.ui[0]' 'google_cloud_run_v2_service.ui'
+          move_state 'google_cloud_run_v2_service_iam_member.backend_public[0]' 'google_cloud_run_v2_service_iam_member.backend_public'
+          move_state 'google_cloud_run_v2_service_iam_member.ui_public[0]' 'google_cloud_run_v2_service_iam_member.ui_public'
+
       - name: Terraform validate
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform validate
