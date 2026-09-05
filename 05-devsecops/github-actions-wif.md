@@ -189,6 +189,8 @@ In the application repository, configure these variables:
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | The `$APP_WIF_PROVIDER` output |
 | `GCP_APPLICATION_SERVICE_ACCOUNT` | The `app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com` output |
 
+The application repository sets these variables automatically in its **Build and Push Cloud Run Images** workflow using the short-lived built-in `github.token`. No PAT is required for the application repository.
+
 ## Configure apply approval
 
 Create a GitHub Environment named `terraform-apply`:

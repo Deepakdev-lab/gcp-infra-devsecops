@@ -96,7 +96,7 @@ Set it to `true` only after the application images exist in GAR and the WIF/GitH
 
 ### GitHub variables and Terraform WIF
 
-Terraform manages the Google Cloud WIF pool, providers, service accounts, and IAM bindings in `wif.tf`. It does not call the GitHub API or store GitHub tokens. Configure the GitHub Actions variables manually in each repository under **Settings > Secrets and variables > Actions > Variables**. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:
+Terraform manages the Google Cloud WIF pool, providers, service accounts, and IAM bindings in `wif.tf`. It does not call the GitHub API or store GitHub tokens. Configure the infrastructure repository variables under **Settings > Secrets and variables > Actions > Variables**. The application repository configures its own variables at the start of its image-build workflow using the short-lived built-in GitHub token. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:
 
 ```powershell
 .\terraform.exe import google_iam_workload_identity_pool.github_actions projects/565532451627/locations/global/workloadIdentityPools/github-actions
