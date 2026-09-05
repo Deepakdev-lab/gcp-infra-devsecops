@@ -190,7 +190,7 @@ Use this order for the first deployment:
 1. Set `backend_image` and `ui_image` in `terraform.tfvars` to the image URLs printed by that workflow.
 1. Run `terraform plan` and apply through the protected GitHub Actions `apply` operation.
 
-For the GitHub Actions plan, set `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` as repository variables. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, so the workflow does not depend on an uncommitted local `terraform.tfvars` file.
+For the GitHub Actions plan, set `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` as repository variables. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, so the workflow does not depend on an uncommitted local `terraform.tfvars` file. The workflow checks these values before planning and stops with a clear message if either is missing.
 
 The backend reads `sample-data.txt` from the private application bucket using the `cloud-run-gcs-app` service account. The UI receives the backend URL from Terraform and calls `/api/data`. Both services are public for this lab; the bucket remains private.
 

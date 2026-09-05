@@ -71,6 +71,14 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform validate
 
+      - name: Check application image variables
+        if: github.event.inputs.operation != 'destroy'
+        run: |
+          test -n "$TF_VAR_backend_image" || { echo "GCP_BACKEND_IMAGE is empty or missing"; exit 1; }
+          test -n "$TF_VAR_ui_image" || { echo "GCP_UI_IMAGE is empty or missing"; exit 1; }
+          echo "Backend image: $TF_VAR_backend_image"
+          echo "UI image: $TF_VAR_ui_image"
+
       - name: Terraform plan
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
