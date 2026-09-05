@@ -36,6 +36,7 @@ env:
   TF_IN_AUTOMATION: true
   TF_INPUT: false
   TF_WORKING_DIR: 02-network-security
+  GITHUB_TOKEN: ${{ secrets.TERRAFORM_GITHUB_TOKEN }}
   TF_VAR_enable_cloud_run: ${{ vars.ENABLE_CLOUD_RUN || 'false' }}
   TF_VAR_backend_image: ${{ vars.GCP_BACKEND_IMAGE }}
   TF_VAR_ui_image: ${{ vars.GCP_UI_IMAGE }}

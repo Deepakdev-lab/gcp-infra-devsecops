@@ -62,6 +62,14 @@ gcloud projects add-iam-policy-binding $PROJECT_ID `
 gcloud projects add-iam-policy-binding $PROJECT_ID `
   --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" `
   --role="roles/serviceusage.serviceUsageAdmin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID `
+  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" `
+  --role="roles/resourcemanager.projectIamAdmin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID `
+  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" `
+  --role="roles/iam.workloadIdentityPoolAdmin"
 ```
 
 `roles/editor` is intentionally broad for this learning lab. Replace it with resource-specific roles before using this pattern in production.
@@ -180,6 +188,8 @@ In the application repository, configure these variables:
 | `GAR_REPOSITORY` | `cloudrun-images` |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | The `$APP_WIF_PROVIDER` output |
 | `GCP_APPLICATION_SERVICE_ACCOUNT` | The `app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com` output |
+
+Add the GitHub fine-grained token used by Terraform as a repository secret named `TERRAFORM_GITHUB_TOKEN` in the infrastructure repository. Give it Actions variables read/write access to both repositories. Do not place this token in Terraform variables or source control.
 
 ## Configure apply approval
 

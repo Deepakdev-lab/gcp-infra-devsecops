@@ -102,7 +102,7 @@ The Terraform module manages GitHub Actions variables in `github_actions_variabl
 $env:GITHUB_TOKEN = "paste-token-in-your-terminal-only"
 ```
 
-The infrastructure GitHub Actions workflow has `actions: write` permission for these variable resources. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:
+The infrastructure workflow uses a repository secret named `TERRAFORM_GITHUB_TOKEN` for the GitHub provider. Use a fine-grained token with Actions variables read/write access to both `gcp-infra-devsecops` and `gcp-app-devsecops`; the built-in `GITHUB_TOKEN` cannot manage variables in the separate application repository. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:
 
 ```powershell
 .\terraform.exe import google_iam_workload_identity_pool.github_actions projects/565532451627/locations/global/workloadIdentityPools/github-actions
