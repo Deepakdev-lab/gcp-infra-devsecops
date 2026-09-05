@@ -52,3 +52,8 @@ output "ui_url" {
   description = "Public Cloud Run UI URL."
   value       = google_cloud_run_v2_service.ui.uri
 }
+
+output "required_services" {
+  description = "Google Cloud APIs managed by this lab."
+  value       = sort(tolist(var.required_services))
+}

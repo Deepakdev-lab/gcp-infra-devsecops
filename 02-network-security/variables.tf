@@ -4,6 +4,21 @@ variable "project_id" {
   default     = "project-a95e6dc6-f7fc-4043-bf9"
 }
 
+variable "required_services" {
+  description = "Google Cloud APIs managed and enabled by this lab."
+  type        = set(string)
+  default = [
+    "artifactregistry.googleapis.com",
+    "compute.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "run.googleapis.com",
+    "serviceusage.googleapis.com",
+    "storage.googleapis.com",
+    "sts.googleapis.com",
+  ]
+}
+
 variable "region" {
   description = "Region for the subnet, router, and Cloud NAT."
   type        = string

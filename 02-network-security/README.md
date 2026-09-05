@@ -42,6 +42,7 @@ This directory contains the first Terraform foundation for the lab:
 - Private GCS application bucket with public access prevention.
 - Dedicated Cloud Run service account with bucket-scoped IAM.
 - Separate GCS bucket for application-bucket access logs.
+- Required Google Cloud APIs managed through a Terraform `for_each` loop.
 
 ### Use case: Cloud Run to GCS
 
@@ -65,6 +66,21 @@ The default role is `roles/storage.objectViewer`, which permits object reads. Fo
 - A dedicated sandbox project with billing and the Compute Engine API enabled.
 - A budget alert configured before creating billable resources.
 - Globally unique names for both GCS buckets.
+
+Terraform manages these APIs from `variables.tf` through `apis.tf`:
+
+```text
+artifactregistry.googleapis.com
+compute.googleapis.com
+iam.googleapis.com
+iamcredentials.googleapis.com
+run.googleapis.com
+serviceusage.googleapis.com
+storage.googleapis.com
+sts.googleapis.com
+```
+
+API resources use `disable_on_destroy = false`, so running the destroy workflow removes lab resources without disabling APIs that may be shared by the project.
 
 ### Initialize and plan
 
