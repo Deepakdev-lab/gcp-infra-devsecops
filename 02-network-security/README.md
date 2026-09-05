@@ -67,10 +67,11 @@ The default role is `roles/storage.objectViewer`, which permits object reads. Fo
 - A budget alert configured before creating billable resources.
 - Globally unique names for both GCS buckets.
 
-Terraform manages these APIs from `variables.tf` through `apis.tf`:
+Terraform manages these APIs from the `locals` block in `apis.tf`:
 
 ```text
 artifactregistry.googleapis.com
+cloudresourcemanager.googleapis.com
 compute.googleapis.com
 iam.googleapis.com
 iamcredentials.googleapis.com
