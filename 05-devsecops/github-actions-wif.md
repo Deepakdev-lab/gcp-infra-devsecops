@@ -139,7 +139,9 @@ The workflow at `.github/workflows/terraform-network-security.yml` already reads
 
 ## Configure the application repository
 
-The application repository uses the same Terraform deployment service account to push images to Artifact Registry, but its repository restriction requires a separate OIDC provider. Run these commands after the infrastructure WIF setup:
+The application repository uses the separate `app-image-publisher` service account to push images to Artifact Registry. Terraform now creates this service account, its GAR writer role, the application OIDC provider, and the application repository variables. Do not use `terraform-deployer` in the application repository.
+
+The one-time manual commands below are only for bootstrapping or importing resources created before Terraform management was added:
 
 ```powershell
 $APP_GITHUB_REPOSITORY = "Deepakdev-lab/gcp-app-devsecops"
@@ -156,13 +158,13 @@ gcloud iam workload-identity-pools providers create-oidc $APP_PROVIDER_ID `
 
 $APP_WIF_MEMBER = "principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/attribute.repository/$APP_GITHUB_REPOSITORY"
 
-gcloud iam service-accounts add-iam-policy-binding $SERVICE_ACCOUNT_EMAIL `
+gcloud iam service-accounts add-iam-policy-binding app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com `
   --project=$PROJECT_ID `
   --role="roles/iam.workloadIdentityUser" `
   --member=$APP_WIF_MEMBER
 
 gcloud projects add-iam-policy-binding $PROJECT_ID `
-  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" `
+  --member="serviceAccount:app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com" `
   --role="roles/artifactregistry.writer"
 
 $APP_WIF_PROVIDER = "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/providers/$APP_PROVIDER_ID"
@@ -177,7 +179,7 @@ In the application repository, configure these variables:
 | `GAR_LOCATION` | `us-east4` |
 | `GAR_REPOSITORY` | `cloudrun-images` |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | The `$APP_WIF_PROVIDER` output |
-| `GCP_TERRAFORM_SERVICE_ACCOUNT` | The `$SERVICE_ACCOUNT_EMAIL` output |
+| `GCP_TERRAFORM_SERVICE_ACCOUNT` | The `app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com` output |
 
 ## Configure apply approval
 

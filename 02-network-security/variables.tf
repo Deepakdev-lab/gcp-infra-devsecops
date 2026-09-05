@@ -34,6 +34,12 @@ variable "enable_nat" {
   default     = false
 }
 
+variable "enable_cloud_run" {
+  description = "Create the public UI and backend Cloud Run services."
+  type        = bool
+  default     = false
+}
+
 variable "bucket_name" {
   description = "Globally unique name of the application's GCS bucket."
   type        = string
@@ -134,4 +140,64 @@ variable "gcs_object_content" {
   description = "Sample content displayed by the UI through the backend."
   type        = string
   default     = "Hello from a protected GCS object served by Cloud Run."
+}
+
+variable "terraform_service_account_id" {
+  description = "Existing service account ID used by the infrastructure repository."
+  type        = string
+  default     = "terraform-deployer"
+}
+
+variable "app_publisher_service_account_id" {
+  description = "Dedicated service account ID used by the application repository to push images."
+  type        = string
+  default     = "app-image-publisher"
+}
+
+variable "github_owner" {
+  description = "GitHub owner used by the GitHub provider."
+  type        = string
+  default     = "Deepakdev-lab"
+}
+
+variable "github_infra_repository_name" {
+  description = "Infrastructure repository name for GitHub Actions variables."
+  type        = string
+  default     = "gcp-infra-devsecops"
+}
+
+variable "github_app_repository_name" {
+  description = "Application repository name for GitHub Actions variables."
+  type        = string
+  default     = "gcp-app-devsecops"
+}
+
+variable "github_workload_identity_pool_id" {
+  description = "Global Workload Identity Pool ID for GitHub Actions."
+  type        = string
+  default     = "github-actions"
+}
+
+variable "github_infra_provider_id" {
+  description = "OIDC provider ID for the infrastructure repository."
+  type        = string
+  default     = "github-oidc"
+}
+
+variable "github_app_provider_id" {
+  description = "OIDC provider ID for the application repository."
+  type        = string
+  default     = "github-app-oidc"
+}
+
+variable "github_infra_repository" {
+  description = "GitHub owner/repository allowed to authenticate as Terraform."
+  type        = string
+  default     = "Deepakdev-lab/gcp-infra-devsecops"
+}
+
+variable "github_app_repository" {
+  description = "GitHub owner/repository allowed to publish application images."
+  type        = string
+  default     = "Deepakdev-lab/gcp-app-devsecops"
 }

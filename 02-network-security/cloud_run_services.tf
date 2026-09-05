@@ -1,5 +1,7 @@
 # Creates the backend Cloud Run service that reads the configured GCS object.
 resource "google_cloud_run_v2_service" "backend" {
+  count = var.enable_cloud_run ? 1 : 0
+
   name     = var.backend_service_name
   location = var.cloud_run_region
   ingress  = "INGRESS_TRAFFIC_ALL"
@@ -25,14 +27,17 @@ resource "google_cloud_run_v2_service" "backend" {
 
 # Makes the backend publicly reachable so the public UI can call it in this lab.
 resource "google_cloud_run_v2_service_iam_member" "backend_public" {
-  name     = google_cloud_run_v2_service.backend.name
-  location = google_cloud_run_v2_service.backend.location
+  count    = var.enable_cloud_run ? 1 : 0
+  name     = google_cloud_run_v2_service.backend[0].name
+  location = google_cloud_run_v2_service.backend[0].location
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
 
 # Creates the public Cloud Run UI and injects the backend URL at deployment time.
 resource "google_cloud_run_v2_service" "ui" {
+  count = var.enable_cloud_run ? 1 : 0
+
   name     = var.ui_service_name
   location = var.cloud_run_region
   ingress  = "INGRESS_TRAFFIC_ALL"
@@ -45,7 +50,7 @@ resource "google_cloud_run_v2_service" "ui" {
 
       env {
         name  = "BACKEND_URL"
-        value = google_cloud_run_v2_service.backend.uri
+        value = google_cloud_run_v2_service.backend[0].uri
       }
     }
   }
@@ -53,8 +58,9 @@ resource "google_cloud_run_v2_service" "ui" {
 
 # Makes the UI publicly reachable for the initial application demo.
 resource "google_cloud_run_v2_service_iam_member" "ui_public" {
-  name     = google_cloud_run_v2_service.ui.name
-  location = google_cloud_run_v2_service.ui.location
+  count    = var.enable_cloud_run ? 1 : 0
+  name     = google_cloud_run_v2_service.ui[0].name
+  location = google_cloud_run_v2_service.ui[0].location
   role     = "roles/run.invoker"
   member   = "allUsers"
 }

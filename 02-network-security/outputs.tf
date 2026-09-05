@@ -45,15 +45,30 @@ output "artifact_registry_repository" {
 
 output "backend_url" {
   description = "Public Cloud Run backend URL."
-  value       = google_cloud_run_v2_service.backend.uri
+  value       = var.enable_cloud_run ? google_cloud_run_v2_service.backend[0].uri : null
 }
 
 output "ui_url" {
   description = "Public Cloud Run UI URL."
-  value       = google_cloud_run_v2_service.ui.uri
+  value       = var.enable_cloud_run ? google_cloud_run_v2_service.ui[0].uri : null
 }
 
 output "required_services" {
   description = "Google Cloud APIs managed by this lab."
   value       = sort(tolist(local.required_services))
+}
+
+output "app_publisher_service_account_email" {
+  description = "Dedicated service account email used by the application image workflow."
+  value       = google_service_account.app_publisher.email
+}
+
+output "github_infra_workload_identity_provider" {
+  description = "WIF provider resource name for the infrastructure repository."
+  value       = google_iam_workload_identity_pool_provider.github_infra.name
+}
+
+output "github_app_workload_identity_provider" {
+  description = "WIF provider resource name for the application repository."
+  value       = google_iam_workload_identity_pool_provider.github_app.name
 }

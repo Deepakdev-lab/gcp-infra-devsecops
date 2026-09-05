@@ -43,6 +43,7 @@ This directory contains the first Terraform foundation for the lab:
 - Dedicated Cloud Run service account with bucket-scoped IAM.
 - Separate GCS bucket for application-bucket access logs.
 - Required Google Cloud APIs managed through a Terraform `for_each` loop.
+- Cloud Run services defined but disabled until application prerequisites are complete.
 
 ### Use case: Cloud Run to GCS
 
@@ -82,6 +83,32 @@ sts.googleapis.com
 ```
 
 API resources use `disable_on_destroy = false`, so running the destroy workflow removes lab resources without disabling APIs that may be shared by the project.
+
+### Cloud Run prerequisite switch
+
+Cloud Run creation is currently disabled:
+
+```hcl
+enable_cloud_run = false
+```
+
+Set it to `true` only after the application images exist in GAR and the WIF/GitHub variables are configured. The Cloud Run definitions remain in `cloud_run_services.tf` and will create both public services when enabled.
+
+### Terraform-managed GitHub variables and WIF
+
+The Terraform module manages GitHub Actions variables in `github_actions_variables.tf` and WIF resources in `wif.tf`. Local Terraform commands need a GitHub token in the environment; do not commit it in a `.tfvars` file:
+
+```powershell
+$env:GITHUB_TOKEN = "paste-token-in-your-terminal-only"
+```
+
+The infrastructure GitHub Actions workflow has `actions: write` permission for these variable resources. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:
+
+```powershell
+.\terraform.exe import google_iam_workload_identity_pool.github_actions projects/565532451627/locations/global/workloadIdentityPools/github-actions
+.\terraform.exe import google_iam_workload_identity_pool_provider.github_infra projects/565532451627/locations/global/workloadIdentityPools/github-actions/providers/github-oidc
+.\terraform.exe import google_iam_workload_identity_pool_provider.github_app projects/565532451627/locations/global/workloadIdentityPools/github-actions/providers/github-app-oidc
+```
 
 ### Initialize and plan
 
