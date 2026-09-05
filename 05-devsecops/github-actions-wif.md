@@ -58,6 +58,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID `
 gcloud projects add-iam-policy-binding $PROJECT_ID `
   --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" `
   --role="roles/storage.admin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID `
+  --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" `
+  --role="roles/serviceusage.serviceUsageAdmin"
 ```
 
 `roles/editor` is intentionally broad for this learning lab. Replace it with resource-specific roles before using this pattern in production.
