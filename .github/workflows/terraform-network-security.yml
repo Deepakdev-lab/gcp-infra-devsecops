@@ -100,9 +100,6 @@ jobs:
     needs: plan
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.operation == 'apply'))
     runs-on: ubuntu-latest
-    environment:
-      name: terraform-apply
-      url: https://console.cloud.google.com/home/dashboard?project=${{ vars.GCP_PROJECT_ID }}
 
     steps:
       - name: Check out repository

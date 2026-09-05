@@ -220,7 +220,7 @@ Use this order for the first deployment:
 1. Set `backend_image` and `ui_image` in `terraform.tfvars` to the image URLs printed by that workflow.
 1. Run `terraform plan` and apply through the protected GitHub Actions `apply` operation.
 
-For the GitHub Actions plan, `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` are optional repository overrides. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, using the initial published image tag when they are absent. A push to `main` runs plan and then requests approval in `terraform-apply` before applying. Pull requests remain plan-only.
+For the GitHub Actions plan, `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` are optional repository overrides. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, using the initial published image tag when they are absent. A push to `main` runs plan and then applies automatically. Pull requests remain plan-only. Destruction remains protected by the separate `terraform-destroy` environment.
 
 The backend reads `sample-data.txt` from the private application bucket using the `cloud-run-gcs-app` service account. The UI receives the backend URL from Terraform and calls `/api/data`. Both services are public for this lab; the bucket remains private.
 
