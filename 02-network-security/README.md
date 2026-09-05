@@ -92,7 +92,7 @@ Cloud Run creation is currently disabled:
 enable_cloud_run = false
 ```
 
-Set it to `true` only after the application images exist in GAR and the WIF/GitHub variables are configured. The Cloud Run definitions remain in `cloud_run_services.tf` and will create both public services when enabled.
+Set it to `true` only after the application images exist in GAR and the WIF/GitHub variables are configured. For the GitHub Actions workflow, create the repository variable `ENABLE_CLOUD_RUN` with value `true`; when it is absent, the workflow passes `false` to Terraform. The Cloud Run definitions remain in `cloud_run_services.tf` and will create both public services when enabled.
 
 ### Terraform-managed GitHub variables and WIF
 
@@ -224,7 +224,7 @@ Use this order for the first deployment:
 1. Set `backend_image` and `ui_image` in `terraform.tfvars` to the image URLs printed by that workflow.
 1. Run `terraform plan` and apply through the protected GitHub Actions `apply` operation.
 
-For the GitHub Actions plan, set `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` as repository variables. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, so the workflow does not depend on an uncommitted local `terraform.tfvars` file. The workflow checks these values before planning and stops with a clear message if either is missing.
+For the GitHub Actions plan, set `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` as repository variables only when `ENABLE_CLOUD_RUN=true`. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, and checks them only when Cloud Run is enabled. This allows infrastructure prerequisites to be applied without application images.
 
 The backend reads `sample-data.txt` from the private application bucket using the `cloud-run-gcs-app` service account. The UI receives the backend URL from Terraform and calls `/api/data`. Both services are public for this lab; the bucket remains private.
 
