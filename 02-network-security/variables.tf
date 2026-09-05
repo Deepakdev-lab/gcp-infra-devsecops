@@ -37,7 +37,7 @@ variable "enable_nat" {
 variable "enable_cloud_run" {
   description = "Create the public UI and backend Cloud Run services."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "bucket_name" {
@@ -115,13 +115,13 @@ variable "ui_service_name" {
 variable "backend_image" {
   description = "Container image URL for the backend Cloud Run service."
   type        = string
-  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:latest"
+  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:d717e2b"
 }
 
 variable "ui_image" {
   description = "Container image URL for the UI Cloud Run service."
   type        = string
-  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:latest"
+  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:d717e2b"
 }
 
 variable "ui_service_account_id" {

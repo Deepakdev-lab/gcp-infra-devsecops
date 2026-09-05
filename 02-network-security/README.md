@@ -43,7 +43,7 @@ This directory contains the first Terraform foundation for the lab:
 - Dedicated Cloud Run service account with bucket-scoped IAM.
 - Separate GCS bucket for application-bucket access logs.
 - Required Google Cloud APIs managed through a Terraform `for_each` loop.
-- Cloud Run services defined but disabled until application prerequisites are complete.
+- Cloud Run services enabled for the first application deployment using the initial image SHA.
 
 ### Use case: Cloud Run to GCS
 
@@ -86,13 +86,13 @@ API resources use `disable_on_destroy = false`, so running the destroy workflow 
 
 ### Cloud Run prerequisite switch
 
-Cloud Run creation is currently disabled:
+Cloud Run creation is enabled for the first application deployment:
 
 ```hcl
-enable_cloud_run = false
+enable_cloud_run = true
 ```
 
-Set it to `true` only after the application images exist in GAR and the WIF/GitHub variables are configured. For the GitHub Actions workflow, create the repository variable `ENABLE_CLOUD_RUN` with value `true`; when it is absent, the workflow passes `false` to Terraform. The Cloud Run definitions remain in `cloud_run_services.tf` and will create both public services when enabled.
+The initial image tag is `d717e2b`. The workflow defaults to that tag when `ENABLE_CLOUD_RUN`, `GCP_BACKEND_IMAGE`, and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
 
 ### GitHub variables and Terraform WIF
 
