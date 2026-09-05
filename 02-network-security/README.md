@@ -94,6 +94,8 @@ enable_cloud_run = true
 
 The initial image tag is `d717e2b00656369bdc62e68660b7f29efe235a3d`. The workflow defaults to that tag when `ENABLE_CLOUD_RUN`, `GCP_BACKEND_IMAGE`, and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
 
+Cloud Run deletion protection is explicitly disabled for this disposable lab. To destroy Cloud Run safely, run a normal `apply` once after this setting is introduced, then run the protected `destroy` operation.
+
 ### GitHub variables and Terraform WIF
 
 Terraform manages the Google Cloud WIF pool, providers, service accounts, and IAM bindings in `wif.tf`. It does not call the GitHub API or store GitHub tokens. Configure the infrastructure repository variables under **Settings > Secrets and variables > Actions > Variables**. The application repository configures its own variables at the start of its image-build workflow using the short-lived built-in GitHub token. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:

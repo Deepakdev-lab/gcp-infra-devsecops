@@ -2,9 +2,10 @@
 resource "google_cloud_run_v2_service" "backend" {
   count = var.enable_cloud_run ? 1 : 0
 
-  name     = var.backend_service_name
-  location = var.cloud_run_region
-  ingress  = "INGRESS_TRAFFIC_ALL"
+  name                = var.backend_service_name
+  location            = var.cloud_run_region
+  ingress             = "INGRESS_TRAFFIC_ALL"
+  deletion_protection = false
 
   template {
     service_account = google_service_account.cloud_run.email
@@ -38,9 +39,10 @@ resource "google_cloud_run_v2_service_iam_member" "backend_public" {
 resource "google_cloud_run_v2_service" "ui" {
   count = var.enable_cloud_run ? 1 : 0
 
-  name     = var.ui_service_name
-  location = var.cloud_run_region
-  ingress  = "INGRESS_TRAFFIC_ALL"
+  name                = var.ui_service_name
+  location            = var.cloud_run_region
+  ingress             = "INGRESS_TRAFFIC_ALL"
+  deletion_protection = false
 
   template {
     service_account = google_service_account.ui.email
