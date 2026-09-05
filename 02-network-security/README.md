@@ -135,6 +135,20 @@ gcloud run deploy SERVICE_NAME `
 
 Replace `SERVICE_NAME`, `REGION`, and `CLOUD_RUN_SERVICE_ACCOUNT_EMAIL` with your values. The application should use the Google Cloud Storage client library and application default credentials; do not add a service-account key file to the container.
 
+### GitHub Actions pipeline
+
+The repository workflow at `.github/workflows/terraform-network-security.yml` runs Terraform format checking, initialization, validation, and planning for pull requests, pushes to `main`, and manual runs.
+
+Before using the workflow, configure these GitHub repository variables:
+
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`: full Workload Identity Federation provider resource name.
+- `GCP_TERRAFORM_SERVICE_ACCOUNT`: service account email used by GitHub Actions.
+- `GCP_PROJECT_ID`: project ID used for the optional workflow environment link.
+
+Configure a GitHub Environment named `terraform-apply` and add required reviewers under its deployment protection rules. The apply job runs only from a manual workflow dispatch on `main`. It pauses at that environment and displays an approval request before executing `terraform apply`.
+
+The GitHub Actions service account needs access to the remote state bucket and permission to manage the resources in this module. Workload Identity Federation is used so the workflow does not store a service-account key.
+
 ### Learning sequence
 
 1. Apply the bucket, service account, and bucket IAM resources.
