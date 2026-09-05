@@ -1,3 +1,24 @@
+# Preserve the existing Cloud Run state addresses after introducing count-based gating.
+moved {
+  from = google_cloud_run_v2_service.backend
+  to   = google_cloud_run_v2_service.backend[0]
+}
+
+moved {
+  from = google_cloud_run_v2_service.ui
+  to   = google_cloud_run_v2_service.ui[0]
+}
+
+moved {
+  from = google_cloud_run_v2_service_iam_member.backend_public
+  to   = google_cloud_run_v2_service_iam_member.backend_public[0]
+}
+
+moved {
+  from = google_cloud_run_v2_service_iam_member.ui_public
+  to   = google_cloud_run_v2_service_iam_member.ui_public[0]
+}
+
 # Creates the backend Cloud Run service that reads the configured GCS object.
 resource "google_cloud_run_v2_service" "backend" {
   count = var.enable_cloud_run ? 1 : 0
