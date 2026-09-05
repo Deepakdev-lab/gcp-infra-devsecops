@@ -107,8 +107,15 @@ The infrastructure GitHub Actions workflow has `actions: write` permission for t
 ```powershell
 .\terraform.exe import google_iam_workload_identity_pool.github_actions projects/565532451627/locations/global/workloadIdentityPools/github-actions
 .\terraform.exe import google_iam_workload_identity_pool_provider.github_infra projects/565532451627/locations/global/workloadIdentityPools/github-actions/providers/github-oidc
-.\terraform.exe import google_iam_workload_identity_pool_provider.github_app projects/565532451627/locations/global/workloadIdentityPools/github-actions/providers/github-app-oidc
 ```
+
+The application provider may not exist yet. If importing it returns `Cannot import non-existent remote object`, create it through Terraform:
+
+```powershell
+.\terraform.exe apply -target=google_iam_workload_identity_pool_provider.github_app
+```
+
+Do not import a resource that does not exist. After the targeted create succeeds, run a normal plan and review the remaining changes.
 
 ### Initialize and plan
 
