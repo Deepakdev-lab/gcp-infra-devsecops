@@ -115,13 +115,13 @@ variable "ui_service_name" {
 variable "backend_image" {
   description = "Container image URL for the backend Cloud Run service."
   type        = string
-  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:d717e2b"
+  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:d717e2b00656369bdc62e68660b7f29efe235a3d"
 }
 
 variable "ui_image" {
   description = "Container image URL for the UI Cloud Run service."
   type        = string
-  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:d717e2b"
+  default     = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:d717e2b00656369bdc62e68660b7f29efe235a3d"
 }
 
 variable "ui_service_account_id" {

@@ -92,7 +92,7 @@ Cloud Run creation is enabled for the first application deployment:
 enable_cloud_run = true
 ```
 
-The initial image tag is `d717e2b`. The workflow defaults to that tag when `ENABLE_CLOUD_RUN`, `GCP_BACKEND_IMAGE`, and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
+The initial image tag is `d717e2b00656369bdc62e68660b7f29efe235a3d`. The workflow defaults to that tag when `ENABLE_CLOUD_RUN`, `GCP_BACKEND_IMAGE`, and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
 
 ### GitHub variables and Terraform WIF
 
