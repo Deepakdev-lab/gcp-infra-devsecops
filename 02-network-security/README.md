@@ -94,15 +94,9 @@ enable_cloud_run = false
 
 Set it to `true` only after the application images exist in GAR and the WIF/GitHub variables are configured. For the GitHub Actions workflow, create the repository variable `ENABLE_CLOUD_RUN` with value `true`; when it is absent, the workflow passes `false` to Terraform. The Cloud Run definitions remain in `cloud_run_services.tf` and will create both public services when enabled.
 
-### Terraform-managed GitHub variables and WIF
+### GitHub variables and Terraform WIF
 
-The Terraform module manages GitHub Actions variables in `github_actions_variables.tf` and WIF resources in `wif.tf`. Local Terraform commands need a GitHub token in the environment; do not commit it in a `.tfvars` file:
-
-```powershell
-$env:GITHUB_TOKEN = "paste-token-in-your-terminal-only"
-```
-
-The infrastructure workflow uses a repository secret named `TERRAFORM_GITHUB_TOKEN` for the GitHub provider. Use a fine-grained token with Actions variables read/write access to both `gcp-infra-devsecops` and `gcp-app-devsecops`; the built-in `GITHUB_TOKEN` cannot manage variables in the separate application repository. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:
+Terraform manages the Google Cloud WIF pool, providers, service accounts, and IAM bindings in `wif.tf`. It does not call the GitHub API or store GitHub tokens. Configure the GitHub Actions variables manually in each repository under **Settings > Secrets and variables > Actions > Variables**. The existing WIF pool and providers were created manually before Terraform management was added, so import them once before applying:
 
 ```powershell
 .\terraform.exe import google_iam_workload_identity_pool.github_actions projects/565532451627/locations/global/workloadIdentityPools/github-actions

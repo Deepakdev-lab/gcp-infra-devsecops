@@ -154,24 +154,6 @@ variable "app_publisher_service_account_id" {
   default     = "app-image-publisher"
 }
 
-variable "github_owner" {
-  description = "GitHub owner used by the GitHub provider."
-  type        = string
-  default     = "Deepakdev-lab"
-}
-
-variable "github_infra_repository_name" {
-  description = "Infrastructure repository name for GitHub Actions variables."
-  type        = string
-  default     = "gcp-infra-devsecops"
-}
-
-variable "github_app_repository_name" {
-  description = "Application repository name for GitHub Actions variables."
-  type        = string
-  default     = "gcp-app-devsecops"
-}
-
 variable "github_workload_identity_pool_id" {
   description = "Global Workload Identity Pool ID for GitHub Actions."
   type        = string

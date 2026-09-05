@@ -147,7 +147,7 @@ The workflow at `.github/workflows/terraform-network-security.yml` already reads
 
 ## Configure the application repository
 
-The application repository uses the separate `app-image-publisher` service account to push images to Artifact Registry. Terraform now creates this service account, its GAR writer role, the application OIDC provider, and the application repository variables. Do not use `terraform-deployer` in the application repository.
+The application repository uses the separate `app-image-publisher` service account to push images to Artifact Registry. Terraform creates this service account, its GAR writer role, and the application OIDC provider. Configure the application repository variables manually in GitHub. Do not use `terraform-deployer` in the application repository.
 
 The one-time manual commands below are only for bootstrapping or importing resources created before Terraform management was added:
 
@@ -188,8 +188,6 @@ In the application repository, configure these variables:
 | `GAR_REPOSITORY` | `cloudrun-images` |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | The `$APP_WIF_PROVIDER` output |
 | `GCP_APPLICATION_SERVICE_ACCOUNT` | The `app-image-publisher@$PROJECT_ID.iam.gserviceaccount.com` output |
-
-Add the GitHub fine-grained token used by Terraform as a repository secret named `TERRAFORM_GITHUB_TOKEN` in the infrastructure repository. Give it Actions variables read/write access to both repositories. Do not place this token in Terraform variables or source control.
 
 ## Configure apply approval
 
