@@ -137,6 +137,10 @@ Create a GitHub Environment named `terraform-apply`:
 
 The workflow runs `plan` automatically. The `apply` job runs only from **Actions > Terraform Network Security > Run workflow** on the `main` branch. It pauses at the `terraform-apply` environment until a required reviewer approves it.
 
+## Configure destroy approval
+
+Create a second GitHub Environment named `terraform-destroy` and add required reviewers. To remove the lab, manually run the workflow on `main` and choose `destroy` as the operation. The workflow first creates a Terraform destroy plan, then pauses at `terraform-destroy` for approval. Only after approval does it apply that reviewed destroy plan.
+
 ## Verify the setup
 
 ```powershell

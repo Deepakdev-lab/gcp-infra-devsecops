@@ -145,7 +145,13 @@ Before using the workflow, configure these GitHub repository variables:
 - `GCP_TERRAFORM_SERVICE_ACCOUNT`: service account email used by GitHub Actions.
 - `GCP_PROJECT_ID`: project ID used for the optional workflow environment link.
 
-Configure a GitHub Environment named `terraform-apply` and add required reviewers under its deployment protection rules. The apply job runs only from a manual workflow dispatch on `main`. It pauses at that environment and displays an approval request before executing `terraform apply`.
+Configure GitHub Environments named `terraform-apply` and `terraform-destroy`, and add required reviewers under each environment's deployment protection rules. From a manual workflow dispatch on `main`, choose `plan`, `apply`, or `destroy`:
+
+- `plan` runs the plan only.
+- `apply` creates or updates resources after approval from `terraform-apply`.
+- `destroy` creates a destroy plan, then deletes the managed resources only after approval from `terraform-destroy`.
+
+The destroy job applies the reviewed destroy plan. It does not run an unplanned `terraform destroy` command.
 
 The GitHub Actions service account needs access to the remote state bucket and permission to manage the resources in this module. Workload Identity Federation is used so the workflow does not store a service-account key.
 
