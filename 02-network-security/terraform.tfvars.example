@@ -1,0 +1,9 @@
+project_id = "replace-with-your-project-id"
+region     = "asia-south1"
+
+# Both names must be globally unique across Google Cloud.
+bucket_name           = "replace-with-a-globally-unique-app-bucket"
+audit_log_bucket_name = "replace-with-a-globally-unique-log-bucket"
+
+# Set to true only after reviewing the estimated lab cost and plan.
+enable_nat = false

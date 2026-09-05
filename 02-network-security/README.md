@@ -1,0 +1,149 @@
+# Network Security
+
+## Definition
+
+Network security controls which systems can communicate, from where, over which ports, and through which path. The goal is to reduce exposure and create deliberate trust boundaries.
+
+## GCP resource mapping
+
+| Security concept | GCP resource or service | Practical use |
+| --- | --- | --- |
+| Private network boundary | VPC network | Isolate workloads and define routing |
+| Network segmentation | Subnets and custom routes | Separate application tiers and regions |
+| Stateful traffic control | VPC firewall rules | Allow only required ingress and egress |
+| Outbound-only internet access | Cloud NAT | Let private workloads reach the internet without public IPs |
+| Access to Google APIs privately | Private Google Access / Private Service Connect | Avoid public paths where supported |
+| Web application protection | Cloud Armor | WAF rules, rate limiting, DDoS protection |
+| Service exposure | External/internal load balancers | Publish only intended entry points |
+| Connectivity inspection | VPC Flow Logs and Connectivity Tests | Investigate traffic and routing |
+
+## Rules to practice
+
+- Default-deny ingress where practical.
+- Use tags or service accounts to target firewall rules narrowly.
+- Keep databases and internal services on private addresses.
+- Restrict administrative access through IAP, VPN, or an approved bastion pattern.
+- Enable VPC Flow Logs for important subnets.
+
+## Lab outcome
+
+Deploy a private test VM or service, permit only required traffic from a controlled source, and confirm that direct public access is unavailable.
+
+## Terraform lab
+
+This directory contains the first Terraform foundation for the lab:
+
+- Custom-mode VPC with regional routing.
+- Private subnet with Private Google Access.
+- VPC Flow Logs.
+- Internal traffic and IAP SSH firewall rules.
+- Cloud Router.
+- Optional Cloud NAT, disabled by default.
+- Private GCS application bucket with public access prevention.
+- Dedicated Cloud Run service account with bucket-scoped IAM.
+- Separate GCS bucket for application-bucket access logs.
+
+### Use case: Cloud Run to GCS
+
+The application runs on Cloud Run and reads or writes objects in a GCS bucket. The intended trust path is:
+
+```text
+Cloud Run service
+  -> dedicated Cloud Run service account
+  -> bucket-level IAM role
+  -> private GCS bucket
+```
+
+Cloud Run does not need Cloud NAT or a VPC just to call GCS. The application authenticates with its attached service account and uses the Google Cloud Storage API. The bucket is private because public access prevention is enabled; access is granted to the service account through IAM.
+
+The default role is `roles/storage.objectViewer`, which permits object reads. For an upload application, use `roles/storage.objectUser` instead of granting broad project-level storage permissions.
+
+### Prerequisites
+
+- Terraform 1.5.7 or later.
+- Google Cloud CLI authenticated with `gcloud auth application-default login`.
+- A dedicated sandbox project with billing and the Compute Engine API enabled.
+- A budget alert configured before creating billable resources.
+- Globally unique names for both GCS buckets.
+
+### Initialize and plan
+
+Terraform uses a separate GCS bucket for remote state. This bucket is the one bootstrap resource that must be created outside Terraform because Terraform needs the bucket before it can initialize the backend.
+
+First authenticate both the Google Cloud CLI and Application Default Credentials:
+
+```powershell
+gcloud auth login
+gcloud auth application-default login
+gcloud auth application-default set-quota-project project-a95e6dc6-f7fc-4043-bf9
+```
+
+Create only the remote-state bucket:
+
+```powershell
+gcloud storage buckets create gs://project-a95e6dc6-f7fc-4043-bf9-tfstate `
+  --project=project-a95e6dc6-f7fc-4043-bf9 `
+  --location=us-east4 `
+  --uniform-bucket-level-access
+
+gcloud storage buckets update gs://project-a95e6dc6-f7fc-4043-bf9-tfstate `
+  --versioning
+
+gcloud storage buckets update gs://project-a95e6dc6-f7fc-4043-bf9-tfstate `
+  --public-access-prevention
+```
+
+Then run these commands from this directory:
+
+```powershell
+.\terraform.exe init
+.\terraform.exe fmt -check
+.\terraform.exe validate
+.\terraform.exe plan -out=tfplan
+```
+
+Terraform will detect the GCS backend and migrate any existing local state after confirmation. Review the plan carefully. Terraform will not create the application VPC, GCS buckets, service account, or IAM resources until `apply` is run.
+
+### Apply and destroy
+
+```powershell
+terraform apply tfplan
+terraform output
+
+# Delete the lab when finished.
+terraform destroy
+```
+
+Cloud NAT is intentionally disabled at first. Set `enable_nat = true`, run a new `terraform plan`, and apply it only when testing outbound access from a private VM. It is not required for the Cloud Run-to-GCS path.
+
+### Deploying Cloud Run with this identity
+
+After Terraform applies, retrieve the service account email:
+
+```powershell
+terraform output -raw cloud_run_service_account_email
+```
+
+Attach that identity when deploying the Cloud Run service:
+
+```powershell
+gcloud run deploy SERVICE_NAME `
+  --source . `
+  --region REGION `
+  --service-account CLOUD_RUN_SERVICE_ACCOUNT_EMAIL
+```
+
+Replace `SERVICE_NAME`, `REGION`, and `CLOUD_RUN_SERVICE_ACCOUNT_EMAIL` with your values. The application should use the Google Cloud Storage client library and application default credentials; do not add a service-account key file to the container.
+
+### Learning sequence
+
+1. Apply the bucket, service account, and bucket IAM resources.
+2. Deploy a small Cloud Run service with the Terraform-created service account.
+3. Verify that the service can read the bucket and cannot access an unrelated bucket.
+4. Inspect bucket access logs and Cloud Audit Logs.
+5. Apply the VPC and subnet with NAT disabled.
+6. Add a private VM in a later exercise and connect through IAP.
+7. Enable NAT and verify outbound-only internet access from the VM.
+8. Add Private Service Access for a managed service such as Cloud SQL.
+9. Add Private Service Connect for a private service endpoint.
+10. Study VPC Service Controls last; it protects supported managed services from data exfiltration and is not a replacement for IAM, firewall rules, or routes.
