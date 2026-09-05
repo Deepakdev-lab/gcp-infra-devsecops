@@ -122,6 +122,13 @@ In GitHub, open **Settings > Secrets and variables > Actions > Variables** and c
 | --- | --- |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | The `$WIF_PROVIDER` output |
 | `GCP_TERRAFORM_SERVICE_ACCOUNT` | The `$SERVICE_ACCOUNT_EMAIL` output |
+
+After the application image workflow pushes images, add these two variables in the infrastructure repository:
+
+| Name | Example value |
+| --- | --- |
+| `GCP_BACKEND_IMAGE` | `us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:GIT_SHA` |
+| `GCP_UI_IMAGE` | `us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:GIT_SHA` |
 | `GCP_PROJECT_ID` | `project-a95e6dc6-f7fc-4043-bf9` |
 
 The workflow at `.github/workflows/terraform-network-security.yml` already reads these variable names.

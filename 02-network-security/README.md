@@ -144,6 +144,8 @@ Before using the workflow, configure these GitHub repository variables:
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`: full Workload Identity Federation provider resource name.
 - `GCP_TERRAFORM_SERVICE_ACCOUNT`: service account email used by GitHub Actions.
 - `GCP_PROJECT_ID`: project ID used for the optional workflow environment link.
+- `GCP_BACKEND_IMAGE`: full GAR URL for the backend image, including its tag.
+- `GCP_UI_IMAGE`: full GAR URL for the UI image, including its tag.
 
 Configure GitHub Environments named `terraform-apply` and `terraform-destroy`, and add required reviewers under each environment's deployment protection rules. From a manual workflow dispatch on `main`, choose `plan`, `apply`, or `destroy`:
 
@@ -167,9 +169,11 @@ Use this order for the first deployment:
   .\terraform.exe apply -target=google_artifact_registry_repository.cloud_run
   ```
 
-2. Configure the application repository's WIF variables and run its **Build and Push Cloud Run Images** workflow.
-3. Set `backend_image` and `ui_image` in `terraform.tfvars` to the image URLs printed by that workflow.
-4. Run `terraform plan` and apply through the protected GitHub Actions `apply` operation.
+1. Configure the application repository's WIF variables and run its **Build and Push Cloud Run Images** workflow.
+1. Set `backend_image` and `ui_image` in `terraform.tfvars` to the image URLs printed by that workflow.
+1. Run `terraform plan` and apply through the protected GitHub Actions `apply` operation.
+
+For the GitHub Actions plan, set `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` as repository variables. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, so the workflow does not depend on an uncommitted local `terraform.tfvars` file.
 
 The backend reads `sample-data.txt` from the private application bucket using the `cloud-run-gcs-app` service account. The UI receives the backend URL from Terraform and calls `/api/data`. Both services are public for this lab; the bucket remains private.
 
