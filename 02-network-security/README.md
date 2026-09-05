@@ -88,11 +88,7 @@ API resources use `disable_on_destroy = false`, so running the destroy workflow 
 
 Cloud Run creation is enabled for the first application deployment:
 
-```hcl
-enable_cloud_run = true
-```
-
-The initial image tag is `d717e2b00656369bdc62e68660b7f29efe235a3d`. Terraform owns the `enable_cloud_run = true` setting; no `ENABLE_CLOUD_RUN` GitHub variable is required. The workflow defaults to the initial image tag when `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
+Cloud Run services are always managed by this Terraform module; no `ENABLE_CLOUD_RUN` GitHub variable is required. The initial image tag is `d717e2b00656369bdc62e68660b7f29efe235a3d`. The workflow defaults to the initial image tag when `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
 
 Cloud Run deletion protection is explicitly disabled for this disposable lab. To destroy Cloud Run safely, run a normal `apply` once after this setting is introduced, then run the protected `destroy` operation.
 

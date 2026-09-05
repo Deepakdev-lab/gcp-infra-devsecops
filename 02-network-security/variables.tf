@@ -34,12 +34,6 @@ variable "enable_nat" {
   default     = false
 }
 
-variable "enable_cloud_run" {
-  description = "Create the public UI and backend Cloud Run services."
-  type        = bool
-  default     = true
-}
-
 variable "bucket_name" {
   description = "Globally unique name of the application's GCS bucket."
   type        = string

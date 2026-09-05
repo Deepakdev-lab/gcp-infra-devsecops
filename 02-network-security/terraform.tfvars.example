@@ -5,9 +5,7 @@ region     = "asia-south1"
 bucket_name           = "replace-with-a-globally-unique-app-bucket"
 audit_log_bucket_name = "replace-with-a-globally-unique-log-bucket"
 
-# Cloud Run is enabled for the first application deployment.
 enable_nat = false
-enable_cloud_run = true
 
 # First image tag produced by the application build workflow.
 backend_image = "us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:d717e2b00656369bdc62e68660b7f29efe235a3d"

@@ -1,24 +1,3 @@
-# Restore stable Cloud Run state addresses now that Cloud Run is always managed by Terraform.
-moved {
-  from = google_cloud_run_v2_service.backend[0]
-  to   = google_cloud_run_v2_service.backend
-}
-
-moved {
-  from = google_cloud_run_v2_service.ui[0]
-  to   = google_cloud_run_v2_service.ui
-}
-
-moved {
-  from = google_cloud_run_v2_service_iam_member.backend_public[0]
-  to   = google_cloud_run_v2_service_iam_member.backend_public
-}
-
-moved {
-  from = google_cloud_run_v2_service_iam_member.ui_public[0]
-  to   = google_cloud_run_v2_service_iam_member.ui_public
-}
-
 # Creates the backend Cloud Run service that reads the configured GCS object.
 resource "google_cloud_run_v2_service" "backend" {
   name                = var.backend_service_name
