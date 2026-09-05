@@ -109,7 +109,7 @@ The application provider may not exist yet. If importing it returns `Cannot impo
 .\terraform.exe apply -target=google_iam_workload_identity_pool_provider.github_app
 ```
 
-Do not import a resource that does not exist. After the targeted create succeeds, run a normal plan and review the remaining changes.
+Do not import a resource that does not exist. After the targeted create succeeds, run a normal plan and review the remaining changes. The imported pool and infrastructure provider use `ignore_changes = all` because they were bootstrapped manually; the Terraform module will not attempt to update them.
 
 ### Initialize and plan
 

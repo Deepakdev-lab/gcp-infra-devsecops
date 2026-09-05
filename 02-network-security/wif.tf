@@ -13,6 +13,11 @@ resource "google_iam_workload_identity_pool" "github_actions" {
   display_name              = "GitHub Actions"
   description               = "Keyless GitHub Actions authentication for this project."
   disabled                  = false
+
+  # This pool was bootstrapped manually and imported into Terraform. Do not mutate it from the lab.
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 # Restricts the infrastructure repository's OIDC tokens to the infrastructure repository.
@@ -29,6 +34,11 @@ resource "google_iam_workload_identity_pool_provider" "github_infra" {
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+
+  # This provider was bootstrapped manually and imported into Terraform. Do not mutate it from the lab.
+  lifecycle {
+    ignore_changes = all
   }
 }
 
