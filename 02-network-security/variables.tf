@@ -183,3 +183,9 @@ variable "github_app_repository" {
   type        = string
   default     = "Deepakdev-lab/gcp-app-devsecops"
 }
+
+variable "app_deployer_service_account_id" {
+  description = "Account ID used by the application repository to deploy Cloud Run revisions."
+  type        = string
+  default     = "app-deployer"
+}

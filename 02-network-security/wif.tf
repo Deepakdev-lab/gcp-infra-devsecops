@@ -72,3 +72,10 @@ resource "google_service_account_iam_member" "github_app" {
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/projects/${data.google_project.current.number}/locations/global/workloadIdentityPools/${var.github_workload_identity_pool_id}/attribute.repository/${var.github_app_repository}"
 }
+
+# Allows the application repository to impersonate the dedicated Cloud Run deployer service account.
+resource "google_service_account_iam_member" "github_app_deployer" {
+  service_account_id = google_service_account.app_deployer.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.current.number}/locations/global/workloadIdentityPools/${var.github_workload_identity_pool_id}/attribute.repository/${var.github_app_repository}"
+}

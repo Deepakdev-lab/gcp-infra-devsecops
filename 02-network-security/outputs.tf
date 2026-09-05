@@ -72,3 +72,8 @@ output "github_app_workload_identity_provider" {
   description = "WIF provider resource name for the application repository."
   value       = google_iam_workload_identity_pool_provider.github_app.name
 }
+
+output "app_deployer_service_account_email" {
+  description = "Dedicated service account email used by the application deployment workflow."
+  value       = google_service_account.app_deployer.email
+}
