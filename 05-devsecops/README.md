@@ -7,7 +7,7 @@ DevSecOps integrates security into planning, source control, build, artifact man
 ## GCP resource mapping
 
 | Security concept | GCP resource or service | Practical use |
-|---|---|---|
+| --- | --- | --- |
 | Infrastructure as code | Terraform with Google provider | Review and reproduce infrastructure changes |
 | CI builds | Cloud Build | Run tests, policy checks, and image builds |
 | Artifact storage | Artifact Registry | Store container images and packages privately |
@@ -17,6 +17,10 @@ DevSecOps integrates security into planning, source control, build, artifact man
 | Runtime platform | Cloud Run / GKE | Run containerized workloads with different control surfaces |
 | Policy as code | Organization Policy, Policy Controller, Terraform validation | Enforce guardrails before or during deployment |
 | Supply-chain identity | Workload Identity Federation | Authenticate CI without static keys |
+
+## GitHub Actions lab
+
+Configure keyless GitHub Actions authentication with the [GitHub Actions Workload Identity Federation guide](github-actions-wif.md). It matches the Terraform workflow in `.github/workflows/terraform-network-security.yml`.
 
 ## Rules to practice
 
