@@ -55,5 +55,5 @@ output "ui_url" {
 
 output "required_services" {
   description = "Google Cloud APIs managed by this lab."
-  value       = sort(tolist(var.required_services))
+  value       = sort(tolist(local.required_services))
 }
