@@ -92,7 +92,7 @@ Cloud Run creation is enabled for the first application deployment:
 enable_cloud_run = true
 ```
 
-The initial image tag is `d717e2b00656369bdc62e68660b7f29efe235a3d`. The workflow defaults to that tag when `ENABLE_CLOUD_RUN`, `GCP_BACKEND_IMAGE`, and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
+The initial image tag is `d717e2b00656369bdc62e68660b7f29efe235a3d`. Terraform owns the `enable_cloud_run = true` setting; no `ENABLE_CLOUD_RUN` GitHub variable is required. The workflow defaults to the initial image tag when `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` are not configured. The Cloud Run definitions remain in `cloud_run_services.tf`.
 
 Cloud Run deletion protection is explicitly disabled for this disposable lab. To destroy Cloud Run safely, run a normal `apply` once after this setting is introduced, then run the protected `destroy` operation.
 
@@ -220,7 +220,7 @@ Use this order for the first deployment:
 1. Set `backend_image` and `ui_image` in `terraform.tfvars` to the image URLs printed by that workflow.
 1. Run `terraform plan` and apply through the protected GitHub Actions `apply` operation.
 
-For the GitHub Actions plan, set `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` as repository variables only when `ENABLE_CLOUD_RUN=true`. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, and checks them only when Cloud Run is enabled. This allows infrastructure prerequisites to be applied without application images.
+For the GitHub Actions plan, `GCP_BACKEND_IMAGE` and `GCP_UI_IMAGE` are optional repository overrides. The workflow passes them to Terraform as `TF_VAR_backend_image` and `TF_VAR_ui_image`, using the initial published image tag when they are absent. A push to `main` runs plan and then requests approval in `terraform-apply` before applying. Pull requests remain plan-only.
 
 The backend reads `sample-data.txt` from the private application bucket using the `cloud-run-gcs-app` service account. The UI receives the backend URL from Terraform and calls `/api/data`. Both services are public for this lab; the bucket remains private.
 
