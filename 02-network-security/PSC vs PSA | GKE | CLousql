@@ -1,0 +1,25 @@
+01. Architecture
+02. GCP project
+03. VPC
+04. Subnet
+05. PGA
+06. PSA
+07. Cloud SQL
+08. PSC
+09. PSC DNS
+10. VM connectivity tests
+11. GKE
+12. Pod/Service networking
+13. GKE → Cloud SQL PSA
+14. GKE → Cloud SQL PSC
+15. Workload Identity Federation
+16. Kubernetes SA → Google SA
+17. IAM roles
+18. Cloud SQL IAM authentication
+19. Cloud SQL Auth Proxy
+20. Current PSC Proxy issue
+21. Cloud Armor
+22. Apigee
+23. What each technology solves
+24. Interview questions
+25. Tomorrow's continuation plan
