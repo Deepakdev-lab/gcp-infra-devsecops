@@ -1,4 +1,3 @@
-```yaml
 name: Terraform Network Security
 
 on:
@@ -403,4 +402,3 @@ jobs:
       - name: Terraform destroy
         working-directory: "${{ env.TF_WORKING_DIR }}"
         run: terraform apply -input=false tfplan
-```
