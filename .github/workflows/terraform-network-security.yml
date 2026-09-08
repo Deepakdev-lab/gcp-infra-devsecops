@@ -1,3 +1,4 @@
+```yaml
 name: Terraform Network Security
 
 on:
@@ -38,15 +39,95 @@ env:
   TF_VAR_backend_image: ${{ vars.GCP_BACKEND_IMAGE || 'us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/backend:d717e2b00656369bdc62e68660b7f29efe235a3d' }}
   TF_VAR_ui_image: ${{ vars.GCP_UI_IMAGE || 'us-east4-docker.pkg.dev/project-a95e6dc6-f7fc-4043-bf9/cloudrun-images/ui:d717e2b00656369bdc62e68660b7f29efe235a3d' }}
 
+
 jobs:
+
   plan:
     name: Terraform plan
     runs-on: ubuntu-latest
 
     steps:
+
+      # ==========================================================
+      # CHECKOUT
+      # ==========================================================
+      #
+      # Downloads the Terraform source code from the repository.
+      #
+      # This does not modify any infrastructure.
+      #
       - name: Check out repository
         uses: actions/checkout@v4
 
+
+      # ==========================================================
+      # TERRAFORM SECURITY SCAN - TRIVY IaC
+      # ==========================================================
+      #
+      # WHAT DOES THIS SCAN DO?
+      #
+      # Trivy analyzes Terraform files as Infrastructure-as-Code.
+      #
+      # It looks for insecure infrastructure configuration such as:
+      #
+      #   - Publicly exposed resources
+      #   - Overly permissive firewall rules
+      #   - 0.0.0.0/0 access where it is unsafe
+      #   - Public storage
+      #   - Excessive IAM permissions
+      #   - Missing encryption/security controls
+      #   - Insecure Cloud Run configuration
+      #   - Insecure network configuration
+      #
+      # IMPORTANT:
+      #
+      # This is a SECURITY scan.
+      #
+      # It does NOT:
+      #
+      #   - create resources
+      #   - delete resources
+      #   - modify resources
+      #   - execute terraform apply
+      #
+      # Example:
+      #
+      #   Terraform says:
+      #
+      #       firewall allows 0.0.0.0/0
+      #
+      #   Trivy can flag that as a potential security problem.
+      #
+      # Terraform validate = "Is my Terraform valid?"
+      #
+      # Trivy config = "Is my Terraform securely configured?"
+      #
+      # ==========================================================
+
+      - name: Security scan - Terraform IaC misconfiguration
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: config
+          scan-ref: ${{ env.TF_WORKING_DIR }}
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          format: table
+          ignore-unfixed: true
+
+
+      # ==========================================================
+      # GCP AUTHENTICATION
+      # ==========================================================
+      #
+      # Authenticates GitHub Actions to GCP using Workload
+      # Identity Federation.
+      #
+      # No service account key is stored in GitHub.
+      #
+      # This authentication is required by Terraform for operations
+      # such as reading the existing Terraform state and generating
+      # the plan.
+      #
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v2
@@ -54,19 +135,59 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_TERRAFORM_SERVICE_ACCOUNT }}
 
+
+      # ==========================================================
+      # TERRAFORM SETUP
+      # ==========================================================
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.7
 
+
+      # ==========================================================
+      # TERRAFORM FORMAT CHECK
+      # ==========================================================
+      #
+      # WHAT DOES THIS DO?
+      #
+      # Checks whether Terraform files follow Terraform's standard
+      # formatting.
+      #
+      # This is NOT a security scanner.
+      #
+      # It prevents poorly formatted Terraform from entering the
+      # pipeline.
+      #
       - name: Terraform format check
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform fmt -check -recursive
 
+
+      # ==========================================================
+      # TERRAFORM INIT
+      # ==========================================================
+      #
+      # Initializes Terraform providers and backend.
+      #
+      # This prepares Terraform to communicate with GCP and the
+      # configured state backend.
+      #
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -input=false
 
+
+      # ==========================================================
+      # NORMALIZE CLOUD RUN STATE ADDRESSES
+      # ==========================================================
+      #
+      # Keeps the existing state migration logic.
+      #
+      # This changes Terraform state addresses only; it is not a
+      # GCP infrastructure deployment.
+      #
       - name: Normalize Cloud Run state addresses
         working-directory: ${{ env.TF_WORKING_DIR }}
         shell: bash
@@ -84,18 +205,74 @@ jobs:
           move_state 'google_cloud_run_v2_service_iam_member.backend_public[0]' 'google_cloud_run_v2_service_iam_member.backend_public'
           move_state 'google_cloud_run_v2_service_iam_member.ui_public[0]' 'google_cloud_run_v2_service_iam_member.ui_public'
 
+
+      # ==========================================================
+      # TERRAFORM VALIDATE
+      # ==========================================================
+      #
+      # WHAT DOES THIS DO?
+      #
+      # Checks Terraform syntax and internal configuration validity.
+      #
+      # Example:
+      #
+      #   Missing argument
+      #   Invalid resource attribute
+      #   Invalid Terraform expression
+      #   Incorrect resource configuration
+      #
+      # This is NOT a security scanner.
+      #
+      # Terraform validate = "Is the Terraform configuration valid?"
+      #
       - name: Terraform validate
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform validate
 
+
+      # ==========================================================
+      # APPLICATION IMAGE VARIABLES CHECK
+      # ==========================================================
+      #
+      # Makes sure the Cloud Run backend/UI image values exist.
+      #
+      # This prevents Terraform from accidentally receiving an
+      # empty image reference.
+      #
       - name: Check application image variables
         if: github.event.inputs.operation != 'destroy'
         run: |
           test -n "$TF_VAR_backend_image" || { echo "GCP_BACKEND_IMAGE is empty or missing"; exit 1; }
           test -n "$TF_VAR_ui_image" || { echo "GCP_UI_IMAGE is empty or missing"; exit 1; }
+
           echo "Backend image: $TF_VAR_backend_image"
           echo "UI image: $TF_VAR_ui_image"
 
+
+      # ==========================================================
+      # TERRAFORM PLAN
+      # ==========================================================
+      #
+      # WHAT DOES THIS DO?
+      #
+      # Terraform compares:
+      #
+      #   Desired configuration
+      #           VS
+      #   Current infrastructure/state
+      #
+      # and produces a proposed change list.
+      #
+      # IMPORTANT:
+      #
+      # terraform plan DOES NOT APPLY the changes.
+      #
+      # It only tells us:
+      #
+      #   + resources to create
+      #   ~ resources to modify
+      #   - resources to destroy
+      #
       - name: Terraform plan
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
@@ -105,12 +282,35 @@ jobs:
             terraform plan -input=false -out=tfplan
           fi
 
+
+      # ==========================================================
+      # UPLOAD TERRAFORM PLAN
+      # ==========================================================
+      #
+      # Saves the generated Terraform plan as a GitHub Actions
+      # artifact.
+      #
+      # The apply job later downloads THIS exact plan.
+      #
       - name: Upload Terraform plan
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
           path: 02-network-security/tfplan
           retention-days: 5
+
+
+  # ============================================================
+  # TERRAFORM APPLY
+  # ============================================================
+  #
+  # IMPORTANT:
+  #
+  # THIS is the stage that can actually modify GCP infrastructure.
+  #
+  # It only runs after the plan job succeeds.
+  #
+  # ============================================================
 
   apply:
     name: Terraform apply
@@ -119,46 +319,72 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Check out repository
         uses: actions/checkout@v4
 
+
+      # GCP authentication is required because Terraform apply
+      # actually communicates with GCP and changes infrastructure.
+      #
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_TERRAFORM_SERVICE_ACCOUNT }}
 
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.7
 
+
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -input=false
 
+
+      # Downloads the exact plan generated by the plan job.
+      #
       - name: Download approved Terraform plan
         uses: actions/download-artifact@v4
         with:
           name: terraform-plan
           path: 02-network-security
 
+
+      # ==========================================================
+      # ACTUAL INFRASTRUCTURE CHANGE
+      # ==========================================================
+      #
+      # This is the step that actually creates/modifies/deletes
+      # GCP resources according to the previously generated plan.
+      #
       - name: Terraform apply
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -input=false tfplan
+
+
+  # ============================================================
+  # TERRAFORM DESTROY
+  # ============================================================
 
   destroy:
     name: Terraform destroy
     needs: plan
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.operation == 'destroy' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     environment:
       name: terraform-destroy
       url: https://console.cloud.google.com/home/dashboard?project=${{ vars.GCP_PROJECT_ID }}
 
     steps:
+
       - name: Check out repository
         uses: actions/checkout@v4
+
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -166,14 +392,17 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_TERRAFORM_SERVICE_ACCOUNT }}
 
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.7
 
+
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -input=false
+
 
       - name: Download Terraform destroy plan
         uses: actions/download-artifact@v4
@@ -181,6 +410,14 @@ jobs:
           name: terraform-plan
           path: 02-network-security
 
+
+      # ==========================================================
+      # ACTUAL INFRASTRUCTURE DESTRUCTION
+      # ==========================================================
+      #
+      # This is the step that actually destroys the resources.
+      #
       - name: Terraform destroy
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -input=false tfplan
+```
