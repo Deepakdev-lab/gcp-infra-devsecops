@@ -1,0 +1,90 @@
+                         ┌──────────────────────────────┐
+                         │        USERS / APPS          │
+                         │ Web • Mobile • APIs • Agents │
+                         └──────────────┬───────────────┘
+                                        │
+                              Identity / SSO / OIDC
+                                        │
+                         ┌──────────────▼───────────────┐
+                         │       API / AI GATEWAY       │
+                         │                              │
+                         │ Apigee / API Gateway         │
+                         │ • OAuth2 / JWT               │
+                         │ • Rate limiting              │
+                         │ • Quotas                     │
+                         │ • API schema validation      │
+                         │ • Threat protection          │
+                         └──────────────┬───────────────┘
+                                        │
+                              WAF / DDoS / Armor
+                                        │
+                         ┌──────────────▼───────────────┐
+                         │       AI SECURITY LAYER      │
+                         │                              │
+                         │ Prompt injection detection   │
+                         │ PII / DLP inspection         │
+                         │ Content safety               │
+                         │ Jailbreak detection          │
+                         │ Input/output validation      │
+                         │ Model abuse detection        │
+                         └──────────────┬───────────────┘
+                                        │
+                 ┌──────────────────────┼──────────────────────┐
+                 │                      │                      │
+                 ▼                      ▼                      ▼
+        ┌────────────────┐     ┌────────────────┐     ┌────────────────┐
+        │ AI APPLICATION │     │ AI AGENT       │     │ RAG            │
+        │                │     │                │     │                │
+        │ Cloud Run/GKE  │     │ Agent Engine   │     │ Vector Search  │
+        │ FastAPI        │     │ Tools / MCP    │     │ Cloud Storage  │
+        └───────┬────────┘     └───────┬────────┘     └───────┬────────┘
+                │                      │                      │
+                └──────────────────────┼──────────────────────┘
+                                       │
+                              Private networking
+                                       │
+                         ┌─────────────▼─────────────┐
+                         │       DATA SECURITY       │
+                         │                           │
+                         │ IAM / RBAC                │
+                         │ VPC Service Controls      │
+                         │ Private Service Connect    │
+                         │ CMEK / KMS                 │
+                         │ Secret Manager             │
+                         │ DLP                        │
+                         │ Data classification       │
+                         │ Encryption                 │
+                         └─────────────┬─────────────┘
+                                       │
+                         ┌─────────────▼─────────────┐
+                         │       MODEL LAYER         │
+                         │                           │
+                         │ Gemini / Vertex AI        │
+                         │ Model endpoints           │
+                         │ Model registry            │
+                         │ Model versioning          │
+                         │ Model access policies     │
+                         └─────────────┬─────────────┘
+                                       │
+                ╔══════════════════════╧══════════════════════╗
+                ║             OBSERVABILITY                  ║
+                ║                                             ║
+                ║ Cloud Logging                               ║
+                ║ Cloud Monitoring                            ║
+                ║ Cloud Trace                                 ║
+                ║ Audit Logs                                  ║
+                ║ SIEM                                        ║
+                ║                                             ║
+                ║ AI-specific telemetry:                      ║
+                ║ • User                                      ║
+                ║ • Agent ID                                  ║
+                ║ • Thread ID                                 ║
+                ║ • Model                                     ║
+                ║ • Prompt/response metadata                  ║
+                ║ • Input/output tokens                       ║
+                ║ • Latency                                   ║
+                ║ • Tool/MCP calls                            ║
+                ║ • Cost                                      ║
+                ║ • Safety events                             ║
+                ║ • DLP events                                ║
+                ╚═════════════════════════════════════════════╝
