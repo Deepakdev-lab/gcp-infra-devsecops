@@ -1,67 +1,44 @@
-                    SECURE RAG INGESTION
-                    GCP RESOURCE FLOW
-
-┌──────────────────────────────┐
-│ Google Cloud Storage (GCS)   │
-│                              │
-│ incoming/                    │
-│ trusted/                     │
-│ quarantine/                  │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ Eventarc                     │
-│ (Object-created trigger)     │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ Cloud Run                    │
-│ rag-ingestion-worker         │
-│                              │
-│ (JSON validation)            │
-│ (Schema validation)          │
-│ (Chunking)                   │
-│ (Metadata validation)        │
-└──────────────┬───────────────┘
-               │
-               ├──────────────────────┐
-               │                      │
-               ▼                      ▼
-┌────────────────────────┐  ┌────────────────────────┐
-│ Sensitive Data          │  │ Vertex AI              │
-│ Protection (DLP)        │  │ Security / AI checks   │
-│                        │  │                        │
-│ (DLP inspection)       │  │ (Prompt injection      │
-│                        │  │  detection logic)      │
-└────────────┬───────────┘  └────────────┬───────────┘
-             │                           │
-             └─────────────┬─────────────┘
-                           │
-                           ▼
                  ┌──────────────────────┐
-                 │ Cloud Storage (GCS)  │
+                 │      GCS Bucket      │
                  │                      │
+                 │ incoming/            │
                  │ trusted/             │
+                 │ quarantine/          │
                  └──────────┬───────────┘
                             │
                             ▼
-                 ┌──────────────────────┐
-                 │ Vertex AI            │
-                 │ Embeddings           │
-                 └──────────┬───────────┘
+                       Eventarc #1
                             │
                             ▼
-                 ┌──────────────────────┐
-                 │ Vertex AI            │
-                 │ Vector Search        │
-                 │                      │
-                 │ Private Index        │
-                 └──────────┬───────────┘
-                            │
-                            ▼
-                 ┌──────────────────────┐
-                 │ Private Service      │
-                 │ Connect (PSC)        │
-                 └──────────────────────┘
+              ┌─────────────────────────────┐
+              │ Cloud Run                   │
+              │ secure-document-validator   │
+              │                             │
+              │ (JSON/schema validation)    │
+              │ (DLP)                       │
+              │ (Model Armor API)           │
+              └──────────────┬──────────────┘
+                             │
+                       SECURITY PASS
+                             │
+                             ▼
+                         trusted/
+                             │
+                             ▼
+                       Eventarc #2
+                             │
+                             ▼
+              ┌─────────────────────────────┐
+              │ Cloud Run                   │
+              │ rag-index-worker            │
+              │                             │
+              │ (chunking)                  │
+              │ (embedding generation)      │
+              │ (Vector Search upsert)      │
+              └──────────────┬──────────────┘
+                             │
+                             ▼
+                  Vertex AI Vector Search
+                        Private Index
+                             │
+                            PSC
