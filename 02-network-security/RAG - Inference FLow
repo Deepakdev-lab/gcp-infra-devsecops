@@ -1,0 +1,48 @@
+┌──────────────┐
+│     USER     │
+│              │
+│ "Where is    │
+│ SHIP-123?"   │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────────────┐
+│    Agent Gateway     │
+│                      │
+│  Model Armor         │
+│  (input screening)   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ GKE RAG Agent        │
+│                      │
+│ (agent orchestration)│
+└───────┬─────────┬────┘
+        │         │
+        │         │
+        ▼         ▼
+┌──────────────┐ ┌───────────────┐
+│ Vertex AI    │ │ Vector Search │
+│ Gemini       │ │ Private Index │
+│              │ │               │
+│ (generation) │ │ (retrieval)   │
+└──────┬───────┘ └───────┬───────┘
+       │                 │
+       │                 │ PSC
+       │                 │
+       └────────┬────────┘
+                ▼
+       ┌──────────────────────┐
+       │    Agent Gateway     │
+       │                      │
+       │ Model Armor          │
+       │ (output screening)   │
+       └──────────┬───────────┘
+                  │
+                  ▼
+             ┌──────────┐
+             │   USER   │
+             │          │
+             │ Answer   │
+             └──────────┘
